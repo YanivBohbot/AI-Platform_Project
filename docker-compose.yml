@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:13
+    container_name: POSTGRES_DB
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: analytics_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+
+zookeeper:
+  image: wurstmeister/zookeeper
+  container_name: ZOOKEEPER
+  restart: always
+  ports:
+    - "2181:2181"
+
+kafka:
+  image: wurstmeister/kafka
+  container_name: KAFKA
+  restart: always
+  ports:
+    - "9092:9092"
+  environment:
+    KAFKA_ADVERTISED_LISTENERS: zookeeper:2181
+    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT://kafka:9092
+  depends_on:
+    - zookeeper
+volumes:
+  postgres-data:
